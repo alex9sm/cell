@@ -143,6 +143,7 @@
     <ClCompile Include="..\dependencies\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\dependencies\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\model\model.cpp" />
     <ClCompile Include="src\shaderfv\shader.cpp" />
     <ClCompile Include="src\ui\ui.cpp" />
     <ClCompile Include="src\window\window.cpp" />
@@ -157,13 +158,22 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="src\model\model.h" />
     <ClInclude Include="src\shaderfv\shader.h" />
     <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\window\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gamedata\models\monkey.mtl" />
     <None Include="src\shaders\fragment.glsl" />
     <None Include="src\shaders\vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="gamedata\models\monkey.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

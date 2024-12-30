@@ -4,16 +4,18 @@
 #include "../dependencies/imgui/imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <string>
+#include <vector>
 
 class UI {
 private:
     GLFWwindow* m_Window;
     bool m_ShowDemoWindow;
 
-    // Initialize ImGui context and implementations
-    //void setupImGui();
-    // Cleanup ImGui context and implementations
-    //void cleanupImGui();
+    std::vector<std::string> m_ModelFiles;        
+    std::vector<std::string> m_SelectedModels;   
+    int m_CurrentItem;                            
+
+    void refreshModelList();
 
 public:
     UI(GLFWwindow* window);
@@ -32,4 +34,6 @@ public:
 
     // Toggle demo window
     void toggleDemoWindow() { m_ShowDemoWindow = !m_ShowDemoWindow; }
+
+    const std::vector<std::string>& getSelectedModels() const { return m_SelectedModels; }
 };
