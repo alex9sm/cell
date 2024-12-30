@@ -21,18 +21,13 @@ public:
     UI(GLFWwindow* window);
     ~UI();
 
-    // Delete copy constructor and assignment operator
     UI(const UI&) = delete;
     UI& operator=(const UI&) = delete;
 
-    // Initialize the UI system
     bool init();
-    // Begin new frame and render UI elements
     void render();
-    // Cleanup resources
     void cleanup();
 
-    // Toggle demo window
     void toggleDemoWindow() { m_ShowDemoWindow = !m_ShowDemoWindow; }
 
     const std::vector<std::string>& getSelectedModels() const { return m_SelectedModels; }

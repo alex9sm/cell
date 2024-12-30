@@ -22,10 +22,7 @@ void UI::refreshModelList() {
     m_ModelFiles.clear();
     const std::filesystem::path modelsPath = "D:\\codingfolder\\CPPprojects\\cell\\cell\\gamedata\\models"; // Change this to your models folder path
 
-    // Check if directory exists
-    
-
-    // Gather all 3D model files
+    // gather all 3d model files
     for (const auto& entry : std::filesystem::directory_iterator(modelsPath)) {
         if (entry.is_regular_file()) {
             std::string extension = entry.path().extension().string();
@@ -41,17 +38,14 @@ void UI::refreshModelList() {
 }
 
 bool UI::init() {
-    // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-    // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
-    // Setup Platform/Renderer backends
     if (!ImGui_ImplGlfw_InitForOpenGL(m_Window, true)) {
         std::cerr << "Failed to initialize ImGui GLFW implementation" << std::endl;
         return false;
@@ -66,13 +60,12 @@ bool UI::init() {
     return true;
 }
 
+//ui definitions and render
 void UI::render() {
-    // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // Add your custom windows here
     {
         ImGui::Begin("Cell");
         
@@ -82,7 +75,6 @@ void UI::render() {
 
         ImGui::SameLine();
 
-        // Show number of available models
         ImGui::Text("Available Models: %zu", m_ModelFiles.size());
 
         if (!m_ModelFiles.empty()) {
@@ -100,9 +92,7 @@ void UI::render() {
                 ImGui::EndCombo();
             }
 
-            // Add button
             if (ImGui::Button("Add Model")) {
-                // Check if model isn't already in the list
                 if (std::find(m_SelectedModels.begin(), m_SelectedModels.end(),
                     m_ModelFiles[m_CurrentItem]) == m_SelectedModels.end()) {
                     m_SelectedModels.push_back(m_ModelFiles[m_CurrentItem]);
@@ -113,21 +103,17 @@ void UI::render() {
             ImGui::Text("No models found in the models directory!");
         }
 
-        // Selected models list
         ImGui::Separator();
         ImGui::Text("Selected Models:");
 
-        // Use a child window for scrolling if the list gets too long
         ImGui::BeginChild("SelectedModels", ImVec2(0, 200), true);
         for (auto it = m_SelectedModels.begin(); it != m_SelectedModels.end();) {
             ImGui::PushID(it->c_str());
-
-            // Display model name
+            //display model name
             ImGui::Text("%s", it->c_str());
 
             ImGui::SameLine();
 
-            // Remove button
             if (ImGui::Button("Remove")) {
                 it = m_SelectedModels.erase(it);
             }
@@ -142,7 +128,6 @@ void UI::render() {
         ImGui::End();
     }
 
-    // Rendering
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

@@ -13,7 +13,7 @@ private:
     GLuint m_VBO;
     GLuint m_EBO;
 
-    // Helper functions
+    // helper functions
     std::string readShaderFile(const std::string& filePath);
     GLuint compileShader(const std::string& source, GLenum shaderType);
     void checkCompileErrors(GLuint shader, const std::string& type);
@@ -24,7 +24,6 @@ public:
     Shader();
     ~Shader();
 
-    // Delete copy constructor and assignment operator
     Shader(const Shader&) = delete;
     Shader& operator=(const Shader&) = delete;
 

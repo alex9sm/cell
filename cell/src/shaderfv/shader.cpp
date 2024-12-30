@@ -7,67 +7,55 @@ Shader::~Shader() {
 }
 
 bool Shader::init(const std::string& vertexPath, const std::string& fragmentPath) {
-    // Read shader files
+
     std::string vertexCode = readShaderFile(vertexPath);
     std::string fragmentCode = readShaderFile(fragmentPath);
 
-    // Compile shaders
     GLuint vertexShader = compileShader(vertexCode, GL_VERTEX_SHADER);
     GLuint fragmentShader = compileShader(fragmentCode, GL_FRAGMENT_SHADER);
 
-    // Create shader program
     m_ProgramID = glCreateProgram();
     glAttachShader(m_ProgramID, vertexShader);
     glAttachShader(m_ProgramID, fragmentShader);
     glLinkProgram(m_ProgramID);
 
-    // Check linking errors
     checkCompileErrors(m_ProgramID, "PROGRAM");
 
-    // Delete shaders as they're linked into the program and no longer necessary
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Initialize buffers
     initBuffers();
 
     return true;
 }
 
 void Shader::initBuffers() {
-    // Vertex data for a triangle
+    // vertex data for a triangle
     float vertices[] = {
-        // positions         // colors
          0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
          0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top
     };
 
-    // Index data
     unsigned int indices[] = {
         0, 1, 2  // first triangle
     };
 
-    // Generate and bind VAO
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
     glGenBuffers(1, &m_EBO);
 
     glBindVertexArray(m_VAO);
 
-    // Bind and set vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Bind and set element buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Color attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
