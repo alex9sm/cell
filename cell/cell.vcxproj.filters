@@ -51,6 +51,9 @@
     <ClCompile Include="src\model\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\tinyobj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\window\window.h">
@@ -97,8 +100,10 @@
     <None Include="src\shaders\fragment.glsl" />
     <None Include="src\shaders\vertex.glsl" />
     <None Include="gamedata\models\monkey.mtl" />
+    <None Include="gamedata\models\floor.mtl" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gamedata\models\monkey.obj" />
+    <CustomBuild Include="gamedata\models\floor.obj" />
   </ItemGroup>
 </Project>

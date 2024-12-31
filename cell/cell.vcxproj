@@ -145,6 +145,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\model\model.cpp" />
     <ClCompile Include="src\shaderfv\shader.cpp" />
+    <ClCompile Include="src\tinyobj.cpp" />
     <ClCompile Include="src\ui\ui.cpp" />
     <ClCompile Include="src\window\window.cpp" />
   </ItemGroup>
@@ -164,12 +165,20 @@
     <ClInclude Include="src\window\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gamedata\models\floor.mtl" />
     <None Include="gamedata\models\monkey.mtl" />
     <None Include="src\shaders\fragment.glsl" />
     <None Include="src\shaders\vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gamedata\models\monkey.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="gamedata\models\floor.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

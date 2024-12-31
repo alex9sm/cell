@@ -1,19 +1,19 @@
 #include "shader.h"
 
-Shader::Shader() : m_ProgramID(0), m_VAO(0), m_VBO(0), m_EBO(0) {}
+Shader::Shader() : m_ProgramID(0) {}
 
 Shader::~Shader() {
     cleanup();
 }
 
 bool Shader::init(const std::string& vertexPath, const std::string& fragmentPath) {
-
     std::string vertexCode = readShaderFile(vertexPath);
     std::string fragmentCode = readShaderFile(fragmentPath);
 
     GLuint vertexShader = compileShader(vertexCode, GL_VERTEX_SHADER);
     GLuint fragmentShader = compileShader(fragmentCode, GL_FRAGMENT_SHADER);
 
+    // Link shaders into a program
     m_ProgramID = glCreateProgram();
     glAttachShader(m_ProgramID, vertexShader);
     glAttachShader(m_ProgramID, fragmentShader);
@@ -21,83 +21,46 @@ bool Shader::init(const std::string& vertexPath, const std::string& fragmentPath
 
     checkCompileErrors(m_ProgramID, "PROGRAM");
 
+    // Clean up individual shaders as they're now linked into the program
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    initBuffers();
-
     return true;
-}
-
-void Shader::initBuffers() {
-    // vertex data for a triangle
-    float vertices[] = {
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top
-    };
-
-    unsigned int indices[] = {
-        0, 1, 2  // first triangle
-    };
-
-    glGenVertexArrays(1, &m_VAO);
-    glGenBuffers(1, &m_VBO);
-    glGenBuffers(1, &m_EBO);
-
-    glBindVertexArray(m_VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-void Shader::cleanup() {
-    cleanupBuffers();
-    if (m_ProgramID != 0) {
-        glDeleteProgram(m_ProgramID);
-        m_ProgramID = 0;
-    }
-}
-
-void Shader::cleanupBuffers() {
-    if (m_VAO != 0) {
-        glDeleteVertexArrays(1, &m_VAO);
-        m_VAO = 0;
-    }
-    if (m_VBO != 0) {
-        glDeleteBuffers(1, &m_VBO);
-        m_VBO = 0;
-    }
-    if (m_EBO != 0) {
-        glDeleteBuffers(1, &m_EBO);
-        m_EBO = 0;
-    }
 }
 
 void Shader::use() {
     glUseProgram(m_ProgramID);
 }
 
-void Shader::render() {
-    use();
-    glBindVertexArray(m_VAO);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+void Shader::cleanup() {
+    if (m_ProgramID != 0) {
+        glDeleteProgram(m_ProgramID);
+        m_ProgramID = 0;
+    }
 }
 
+// Uniform setters
+void Shader::setBool(const std::string& name, bool value) const {
+    glUniform1i(glGetUniformLocation(m_ProgramID, name.c_str()), (int)value);
+}
+
+void Shader::setInt(const std::string& name, int value) const {
+    glUniform1i(glGetUniformLocation(m_ProgramID, name.c_str()), value);
+}
+
+void Shader::setFloat(const std::string& name, float value) const {
+    glUniform1f(glGetUniformLocation(m_ProgramID, name.c_str()), value);
+}
+
+void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
+    glUniform3fv(glGetUniformLocation(m_ProgramID, name.c_str()), 1, &value[0]);
+}
+
+void Shader::setMat4(const std::string& name, const glm::mat4& mat) const {
+    glUniformMatrix4fv(glGetUniformLocation(m_ProgramID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+// Helper functions
 std::string Shader::readShaderFile(const std::string& filePath) {
     std::string shaderCode;
     std::ifstream shaderFile;
@@ -148,16 +111,4 @@ void Shader::checkCompileErrors(GLuint shader, const std::string& type) {
                 << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }
-}
-
-void Shader::setBool(const std::string& name, bool value) const {
-    glUniform1i(glGetUniformLocation(m_ProgramID, name.c_str()), (int)value);
-}
-
-void Shader::setInt(const std::string& name, int value) const {
-    glUniform1i(glGetUniformLocation(m_ProgramID, name.c_str()), value);
-}
-
-void Shader::setFloat(const std::string& name, float value) const {
-    glUniform1f(glGetUniformLocation(m_ProgramID, name.c_str()), value);
 }
