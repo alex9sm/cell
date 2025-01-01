@@ -4,7 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <algorithm>
-
+#include "camera.h"
 
 UI::UI(GLFWwindow* window)
     : m_Window(window)
@@ -61,13 +61,28 @@ bool UI::init() {
 }
 
 //ui definitions and render
-void UI::render() {
+void UI::render(Camera& camera) {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
     {
         ImGui::Begin("Cell");
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+            1000.0f / ImGui::GetIO().Framerate,
+            ImGui::GetIO().Framerate);
+
+        ImGui::Separator();
+
+        ImGui::Text("Camera Controls");
+
+        static float speed = camera.m_MovementSpeed;
+        if (ImGui::SliderFloat("Camera Speed", &speed, 1.0f, 50.0f, "%.1f deg")) {
+            camera.m_MovementSpeed = speed;
+        }
+
+        ImGui::Separator();
         
         if (ImGui::Button("Refresh Model List")) {
             refreshModelList();

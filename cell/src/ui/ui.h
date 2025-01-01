@@ -1,10 +1,12 @@
 #pragma once
+#include <GL/glew.h>
 #include "../dependencies/imgui/imgui.h"
 #include "../dependencies/imgui/imgui_impl_glfw.h"
 #include "../dependencies/imgui/imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <string>
 #include <vector>
+#include "camera.h"
 
 class UI {
 private:
@@ -25,7 +27,7 @@ public:
     UI& operator=(const UI&) = delete;
 
     bool init();
-    void render();
+    void render(Camera& camera);
     void cleanup();
 
     void toggleDemoWindow() { m_ShowDemoWindow = !m_ShowDemoWindow; }

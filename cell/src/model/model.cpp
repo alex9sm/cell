@@ -22,6 +22,8 @@ bool Model::loadModel(const std::string& filepath) {
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
+    std::string directory = filepath.substr(0, filepath.find_last_of('/') + 1);
+
     // Load the model using tinyobjloader
     bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str());
 
@@ -38,6 +40,8 @@ bool Model::loadModel(const std::string& filepath) {
         std::cerr << "Failed to load model: " << filepath << std::endl;
         return false;
     }
+
+    loadMaterialTextures(materials, directory);
 
     // Process the loaded data into our mesh format
     processModelData(attrib, shapes, materials);
@@ -138,9 +142,20 @@ void Model::setupMesh() {
 }
 
 void Model::render() {
+
+    if (!m_Materials.empty()) {
+        // Bind the first material's textures
+        // In a more advanced implementation, you might want to handle multiple materials
+        m_Materials[0]->bind();
+    }
+
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_Indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    if (!m_Materials.empty()) {
+        m_Materials[0]->unbind();
+    }
 }
 
 void Model::cleanup() {
@@ -166,4 +181,29 @@ glm::mat4 Model::getModelMatrix() const {
     model = glm::rotate(model, m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::scale(model, m_Scale);
     return model;
+}
+
+bool Model::loadMaterialTextures(const std::vector<tinyobj::material_t>& materials,
+    const std::string& modelPath) {
+    for (const auto& material : materials) {
+        auto mat = std::make_shared<Material>(material.name);
+
+        // If there's a diffuse texture, load it
+        if (!material.diffuse_texname.empty()) {
+            std::string texturePath = "gamedata/textures/" + material.diffuse_texname;
+            if (!mat->loadDiffuseTexture(texturePath)) {
+                std::cerr << "Failed to load texture: " << texturePath << std::endl;
+                return false;
+            }
+        }
+
+        m_Materials.push_back(mat);
+    }
+
+    // If no materials were loaded, create a default material
+    if (m_Materials.empty()) {
+        m_Materials.push_back(std::make_shared<Material>("default"));
+    }
+
+    return true;
 }

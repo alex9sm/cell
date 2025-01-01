@@ -54,6 +54,21 @@
     <ClCompile Include="src\tinyobj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\model\model_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\material\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\texture\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\window\window.h">
@@ -95,15 +110,27 @@
     <ClInclude Include="src\model\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\model\model_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camera\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture\texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragment.glsl" />
     <None Include="src\shaders\vertex.glsl" />
-    <None Include="gamedata\models\monkey.mtl" />
     <None Include="gamedata\models\floor.mtl" />
+    <None Include="gamedata\models\sphere.mtl" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="gamedata\models\monkey.obj" />
     <CustomBuild Include="gamedata\models\floor.obj" />
+    <CustomBuild Include="gamedata\models\sphere.obj" />
   </ItemGroup>
 </Project>
