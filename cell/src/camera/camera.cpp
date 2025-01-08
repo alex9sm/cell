@@ -1,7 +1,6 @@
-// camera.cpp
 #include "camera.h"
 
-// Constructor sets up default camera values
+// default camera values
 Camera::Camera(GLFWwindow* window)
     : m_Window(window)
     , m_Position(glm::vec3(0.0f, 0.0f, 3.0f))
@@ -15,14 +14,15 @@ Camera::Camera(GLFWwindow* window)
     , m_LastX(0.0f)
     , m_LastY(0.0f)
     , m_CursorEnabled(false)
+    , m_AttachedToPlayer(false)
+    , m_AttachedPlayer(nullptr)
+
 {
-    // Calculate initial camera vectors
     updateCameraVectors();
 
-    // Set up mouse input
+    // mouse input
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Get initial window size for mouse position initialization
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     m_LastX = width / 2.0f;
@@ -39,33 +39,19 @@ void Camera::processCursorToggle() {
         m_CursorEnabled = !m_CursorEnabled;
 
         if (m_CursorEnabled) {
-            // Switching to GUI mode
             glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
         else {
-            // Switching to camera mode
             glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-            // Get the current mouse position and store it
             double xpos, ypos;
             glfwGetCursorPos(m_Window, &xpos, &ypos);
             m_LastX = xpos;
             m_LastY = ypos;
-            m_FirstMouse = true;  // This will ensure smooth transition
+            m_FirstMouse = true;  
         }
     }
     wasPressed = isPressed;
-}
-
-void Camera::update(float deltaTime) {
-    processCursorToggle();    
-    processKeyboard(deltaTime);
-    processMouseMovement();
-
-    if (!m_CursorEnabled) {
-        processKeyboard(deltaTime);
-        processMouseMovement();
-    }
 }
 
 void Camera::processKeyboard(float deltaTime) {
@@ -98,8 +84,66 @@ void Camera::processKeyboard(float deltaTime) {
         m_Position -= m_WorldUp * velocity;
 }
 
-void Camera::processMouseMovement() {
+void Camera::updateCameraVectors() {
+    glm::vec3 front;
+    front.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+    front.y = sin(glm::radians(m_Pitch));
+    front.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+    m_Front = glm::normalize(front);
 
+    m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));
+    m_Up = glm::normalize(glm::cross(m_Right, m_Front));
+}
+
+glm::mat4 Camera::getViewMatrix() const {
+    return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+}
+
+void Camera::attachToPlayer(Player* player) {
+    m_AttachedPlayer = player;
+    m_AttachedToPlayer = true;
+
+    // Sync camera with player position and rotation
+    m_Position = m_AttachedPlayer->getPosition();
+    m_Front = m_AttachedPlayer->getFront();
+    m_Up = m_AttachedPlayer->getUp();
+    m_Yaw = m_AttachedPlayer->getYaw();
+    m_Pitch = m_AttachedPlayer->getPitch();
+}
+
+void Camera::detachFromPlayer() {
+    m_AttachedToPlayer = false;
+    m_AttachedPlayer = nullptr;
+}
+
+// Modify the update function in camera.cpp:
+void Camera::update(float deltaTime) {
+    processCursorToggle();
+
+    if (m_AttachedToPlayer) {
+        // When attached to player, sync position and rotation
+        m_Position = m_AttachedPlayer->getPosition();
+        m_Front = m_AttachedPlayer->getFront();
+        m_Up = m_AttachedPlayer->getUp();
+        m_Yaw = m_AttachedPlayer->getYaw();
+        m_Pitch = m_AttachedPlayer->getPitch();
+
+        // Pass mouse movement to player
+        if (!m_CursorEnabled) {
+            processMouseMovement();
+        }
+    }
+    else {
+        // Regular free camera movement
+        if (!m_CursorEnabled) {
+            processKeyboard(deltaTime);
+            processMouseMovement();
+        }
+    }
+}
+
+// Modify processMouseMovement in camera.cpp:
+void Camera::processMouseMovement() {
     if (m_CursorEnabled) {
         return;
     }
@@ -113,44 +157,29 @@ void Camera::processMouseMovement() {
         m_FirstMouse = false;
     }
 
-    // Calculate mouse movement since last frame
     float xoffset = xpos - m_LastX;
-    float yoffset = m_LastY - ypos; // Reversed since y-coordinates range bottom-to-top
+    float yoffset = m_LastY - ypos;
 
     m_LastX = xpos;
     m_LastY = ypos;
 
-    // Apply sensitivity
-    xoffset *= m_MouseSensitivity;
-    yoffset *= m_MouseSensitivity;
+    if (m_AttachedToPlayer) {
+        // Pass mouse movement to player
+        m_AttachedPlayer->processMouseMovement(xoffset, yoffset);
+    }
+    else {
+        // Regular camera movement
+        xoffset *= m_MouseSensitivity;
+        yoffset *= m_MouseSensitivity;
 
-    // Update Euler angles
-    m_Yaw += xoffset;
-    m_Pitch += yoffset;
+        m_Yaw += xoffset;
+        m_Pitch += yoffset;
 
-    // Constrain pitch
-    if (m_Pitch > 89.0f)
-        m_Pitch = 89.0f;
-    if (m_Pitch < -89.0f)
-        m_Pitch = -89.0f;
+        if (m_Pitch > 89.0f)
+            m_Pitch = 89.0f;
+        if (m_Pitch < -89.0f)
+            m_Pitch = -89.0f;
 
-    // Update camera vectors based on new angles
-    updateCameraVectors();
-}
-
-void Camera::updateCameraVectors() {
-    // Calculate the new front vector
-    glm::vec3 front;
-    front.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    front.y = sin(glm::radians(m_Pitch));
-    front.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    m_Front = glm::normalize(front);
-
-    // Recalculate right and up vectors
-    m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));
-    m_Up = glm::normalize(glm::cross(m_Right, m_Front));
-}
-
-glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+        updateCameraVectors();
+    }
 }

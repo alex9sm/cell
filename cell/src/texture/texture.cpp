@@ -1,6 +1,7 @@
 #include "texture.h"
 #include <stbimage/stb_image.h>
 #include <iostream>
+#include <filesystem>
 
 Texture::Texture()
     : m_TextureID(0)
@@ -18,8 +19,16 @@ Texture::~Texture() {
 bool Texture::loadTexture(const std::string& path) {
     m_Path = path;
 
+    std::cout << "Attempting to load texture from: " << path << std::endl;
+
+    // Check if file exists
+    if (!std::filesystem::exists(path)) {
+        std::cerr << "Texture file does not exist at path: " << path << std::endl;
+        return false;
+    }
+
     // Load image using stb_image
-    stbi_set_flip_vertically_on_load(true);  // Flip texture vertically because OpenGL expects different orientation
+    stbi_set_flip_vertically_on_load(true);  
     unsigned char* data = stbi_load(path.c_str(), &m_Width, &m_Height, &m_Channels, 0);
 
     if (!data) {

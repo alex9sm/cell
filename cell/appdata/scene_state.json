@@ -1,0 +1,25 @@
+{
+    "scene": {
+        "models": [
+            {
+                "path": "stick.obj"
+            },
+            {
+                "path": "stone.obj"
+            },
+            {
+                "path": "floor.obj"
+            },
+            {
+                "path": "house.obj"
+            },
+            {
+                "path": "sand.obj"
+            },
+            {
+                "path": "canopy.obj"
+            }
+        ],
+        "version": 1.0
+    }
+}

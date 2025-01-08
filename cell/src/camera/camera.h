@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "player.h"
 
 class Camera {
 private:
@@ -18,35 +19,35 @@ private:
     float m_Yaw;
     float m_Pitch;
 
-    // Window reference for input handling
     GLFWwindow* m_Window;
 
-    // Input tracking
     bool m_FirstMouse;
     float m_LastX;
     float m_LastY;
 
-    // Private methods for internal use
     void processKeyboard(float deltaTime);
     void processMouseMovement();
     void updateCameraVectors();
     bool m_CursorEnabled;
     void processCursorToggle();
 
+    bool m_AttachedToPlayer;
+    Player* m_AttachedPlayer;
+
 public:
     Camera(GLFWwindow* window);
     ~Camera() = default;
 
-    // Main update function that handles all input processing
     void update(float deltaTime);
 
-    // Returns the view matrix calculated using Euler angles
     glm::mat4 getViewMatrix() const;
 
-    // Getter for camera position (might be useful for other systems)
     glm::vec3 getPosition() const { return m_Position; }
 
-    // Camera options
     float m_MovementSpeed;
     float m_MouseSensitivity;
+
+    void attachToPlayer(Player* player);
+    void detachFromPlayer();
+    bool isAttachedToPlayer() const { return m_AttachedToPlayer; }
 };

@@ -52,4 +52,6 @@ public:
     void setScale(const glm::vec3& scale) { m_Scale = scale; }
 
     glm::mat4 getModelMatrix() const;
+
+    std::vector<int> m_MaterialIndices;
 };

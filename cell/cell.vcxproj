@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\GLFW\include;$(SolutionDir)dependencies\GLEW\include;$(SolutionDir)dependencies;$(SolutionDir)cell\src\shaderfv;$(SolutionDir)cell\src\window;$(SolutionDir)cell\src\ui;$(SolutionDir)cell\src\camera;$(SolutionDir)cell\src\texture;$(SolutionDir)cell\src\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\GLFW\include;$(SolutionDir)dependencies\GLEW\include;$(SolutionDir)dependencies;$(SolutionDir)cell\src\shaderfv;$(SolutionDir)cell\src\window;$(SolutionDir)cell\src\ui;$(SolutionDir)cell\src\camera;$(SolutionDir)cell\src\texture;$(SolutionDir)cell\src\material;$(SolutionDir)cell\src\model;$(SolutionDir)cell\src\scene;$(SolutionDir)cell\src\player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\GLFW\include;$(SolutionDir)dependencies\GLEW\include;$(SolutionDir)dependencies;$(SolutionDir)cell\src\shaderfv;$(SolutionDir)cell\src\window;$(SolutionDir)cell\src\ui;$(SolutionDir)cell\src\camera;$(SolutionDir)cell\src\texture;$(SolutionDir)cell\src\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\GLFW\include;$(SolutionDir)dependencies\GLEW\include;$(SolutionDir)dependencies;$(SolutionDir)cell\src\shaderfv;$(SolutionDir)cell\src\window;$(SolutionDir)cell\src\ui;$(SolutionDir)cell\src\camera;$(SolutionDir)cell\src\texture;$(SolutionDir)cell\src\material;$(SolutionDir)cell\src\model;$(SolutionDir)cell\src\scene;$(SolutionDir)cell\src\player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -147,7 +147,11 @@
     <ClCompile Include="src\material\material.cpp" />
     <ClCompile Include="src\model\model.cpp" />
     <ClCompile Include="src\model\model_manager.cpp" />
+    <ClCompile Include="src\player\player.cpp" />
+    <ClCompile Include="src\player\player_controller.cpp" />
+    <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\shaderfv\shader.cpp" />
+    <ClCompile Include="src\skybox\skybox.cpp" />
     <ClCompile Include="src\stb.cpp" />
     <ClCompile Include="src\texture\texture.cpp" />
     <ClCompile Include="src\tinyobj.cpp" />
@@ -168,16 +172,36 @@
     <ClInclude Include="src\material\material.h" />
     <ClInclude Include="src\model\model.h" />
     <ClInclude Include="src\model\model_manager.h" />
+    <ClInclude Include="src\player\player.h" />
+    <ClInclude Include="src\player\player_controller.h" />
+    <ClInclude Include="src\scene\scene.h" />
     <ClInclude Include="src\shaderfv\shader.h" />
+    <ClInclude Include="src\skybox\skybox.h" />
     <ClInclude Include="src\texture\texture.h" />
     <ClInclude Include="src\ui\ui.h" />
     <ClInclude Include="src\window\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="appdata\scene_state.json" />
+    <None Include="gamedata\models\canopy.mtl" />
     <None Include="gamedata\models\floor.mtl" />
+    <None Include="gamedata\models\house.mtl" />
+    <None Include="gamedata\models\sand.mtl" />
+    <None Include="gamedata\models\sand2.mtl" />
     <None Include="gamedata\models\sphere.mtl" />
+    <None Include="gamedata\models\stick.mtl" />
+    <None Include="gamedata\models\stone.mtl" />
+    <None Include="gamedata\models\stone2.mtl" />
+    <None Include="gamedata\textures\blue_metal_plate_2k.blend.zip" />
+    <None Include="gamedata\textures\Bricks098_1K-JPG.zip" />
+    <None Include="gamedata\textures\PaintedPlaster006_1K-JPG.zip" />
+    <None Include="gamedata\textures\weathered_planks_2k.blend.zip" />
     <None Include="src\shaders\fragment.glsl" />
+    <None Include="src\shaders\skybox_fragment.glsl" />
+    <None Include="src\shaders\skybox_vertex.glsl" />
     <None Include="src\shaders\vertex.glsl" />
+    <None Include="src\shaders\wireframe_fragment.glsl" />
+    <None Include="src\shaders\wireframe_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gamedata\models\floor.obj">
@@ -190,6 +214,70 @@
     <CustomBuild Include="gamedata\models\sphere.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="gamedata\textures\blue_metal_plate_diff_2k.jpg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Image>
+    <Image Include="gamedata\textures\Bricks098_1K-JPG_Color.jpg" />
+    <Image Include="gamedata\textures\damaged-grunge-texture-background.jpg" />
+    <Image Include="gamedata\textures\ornamental-textile-floor.jpg" />
+    <Image Include="gamedata\textures\PaintedPlaster006_1K-JPG_Color.jpg" />
+    <Image Include="gamedata\textures\rock-texture-wallpaper.jpg" />
+    <Image Include="gamedata\textures\rough-concrete-wall-with-peeling.jpg" />
+    <Image Include="gamedata\textures\skybox_cubemap\nx.jpg" />
+    <Image Include="gamedata\textures\skybox_cubemap\ny.jpg" />
+    <Image Include="gamedata\textures\skybox_cubemap\nz.jpg" />
+    <Image Include="gamedata\textures\skybox_cubemap\px.jpg" />
+    <Image Include="gamedata\textures\skybox_cubemap\py.jpg" />
+    <Image Include="gamedata\textures\skybox_cubemap\pz.jpg" />
+    <Image Include="gamedata\textures\stone2.jpg" />
+    <Image Include="gamedata\textures\weathered_planks_diff_2k.jpg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="gamedata\models\canopy.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="gamedata\models\house.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="gamedata\models\sand.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="gamedata\models\stick.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="gamedata\models\stone.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="gamedata\models\sand2.obj">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="gamedata\models\stone2.obj">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </CustomBuild>
   </ItemGroup>

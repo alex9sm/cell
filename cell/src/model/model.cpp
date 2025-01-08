@@ -1,6 +1,8 @@
 #include "model.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <filesystem>
+#include "material.h"
 
 Model::Model()
     : m_VAO(0)
@@ -22,10 +24,11 @@ bool Model::loadModel(const std::string& filepath) {
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    std::string directory = filepath.substr(0, filepath.find_last_of('/') + 1);
+    std::filesystem::path modelPath(filepath);
+    std::string baseDir = modelPath.parent_path().string() + "/";
 
     // Load the model using tinyobjloader
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str());
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str(), baseDir.c_str());
 
     if (!warn.empty()) {
         std::cout << "Warning: " << warn << std::endl;
@@ -41,12 +44,10 @@ bool Model::loadModel(const std::string& filepath) {
         return false;
     }
 
-    loadMaterialTextures(materials, directory);
+    loadMaterialTextures(materials, baseDir);
 
     // Process the loaded data into our mesh format
     processModelData(attrib, shapes, materials);
-
-    // Set up OpenGL buffers
     setupMesh();
 
     return true;
@@ -61,10 +62,15 @@ void Model::processModelData(const tinyobj::attrib_t& attrib,
 
     // Process all shapes in the model
     for (const auto& shape : shapes) {
-        // Process all faces in the shape
         size_t index_offset = 0;
         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
             int fv = shape.mesh.num_face_vertices[f];
+            int materialId = shape.mesh.material_ids[f];
+            if (materialId < 0) materialId = 0;
+
+            for (size_t v = 0; v < 3; v++) { // Assuming triangulated faces
+                m_MaterialIndices.push_back(materialId);
+            }
 
             // Process all vertices in the face
             for (size_t v = 0; v < fv; v++) {
@@ -184,18 +190,48 @@ glm::mat4 Model::getModelMatrix() const {
 }
 
 bool Model::loadMaterialTextures(const std::vector<tinyobj::material_t>& materials,
-    const std::string& modelPath) {
+    const std::string& baseDir) {
+    bool allLoaded = true;
     for (const auto& material : materials) {
         auto mat = std::make_shared<Material>(material.name);
 
         // If there's a diffuse texture, load it
         if (!material.diffuse_texname.empty()) {
-            std::string texturePath = "gamedata/textures/" + material.diffuse_texname;
-            if (!mat->loadDiffuseTexture(texturePath)) {
-                std::cerr << "Failed to load texture: " << texturePath << std::endl;
-                return false;
+            // Try different possible paths for the texture
+            std::vector<std::string> possiblePaths = {
+                baseDir + material.diffuse_texname,                    
+                "gamedata/textures/" + material.diffuse_texname,       
+                baseDir + "../textures/" + material.diffuse_texname    
+            };
+
+            bool textureLoaded = false;
+            for (const auto& path : possiblePaths) {
+                if (std::filesystem::exists(path)) {
+                    if (mat->loadDiffuseTexture(path)) {
+                        textureLoaded = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!textureLoaded) {
+                std::cerr << "Failed to load texture: " << material.diffuse_texname << std::endl;
+                allLoaded = false;
             }
         }
+
+        // Store material properties (for future use with more complex materials)
+        mat->setAmbient(glm::vec3(
+            material.ambient[0],
+            material.ambient[1],
+            material.ambient[2]
+        ));
+        mat->setDiffuse(glm::vec3(
+            material.diffuse[0],
+            material.diffuse[1],
+            material.diffuse[2]
+        ));
+        mat->setShininess(material.shininess);
 
         m_Materials.push_back(mat);
     }
@@ -205,5 +241,5 @@ bool Model::loadMaterialTextures(const std::vector<tinyobj::material_t>& materia
         m_Materials.push_back(std::make_shared<Material>("default"));
     }
 
-    return true;
+    return allLoaded;
 }

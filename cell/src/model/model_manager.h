@@ -29,4 +29,6 @@ public:
     // Helper methods
     bool isModelLoaded(const std::string& modelPath) const;
     void removeUnselectedModels(const std::vector<std::string>& selectedModels);
+
+    const std::vector<std::string>& getLoadedPaths() const { return m_LoadedPaths; }
 };

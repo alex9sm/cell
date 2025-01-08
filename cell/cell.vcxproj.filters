@@ -69,6 +69,18 @@
     <ClCompile Include="src\texture\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\skybox\skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\player\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\player\player_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\window\window.h">
@@ -122,15 +134,97 @@
     <ClInclude Include="src\material\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\skybox\skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\player\player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\player\player_controller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragment.glsl" />
     <None Include="src\shaders\vertex.glsl" />
     <None Include="gamedata\models\floor.mtl" />
     <None Include="gamedata\models\sphere.mtl" />
+    <None Include="gamedata\models\canopy.mtl" />
+    <None Include="gamedata\models\house.mtl" />
+    <None Include="gamedata\models\sand.mtl" />
+    <None Include="gamedata\models\stick.mtl" />
+    <None Include="gamedata\textures\weathered_planks_2k.blend.zip" />
+    <None Include="gamedata\textures\Bricks098_1K-JPG.zip" />
+    <None Include="gamedata\textures\PaintedPlaster006_1K-JPG.zip" />
+    <None Include="gamedata\textures\blue_metal_plate_2k.blend.zip" />
+    <None Include="src\shaders\skybox_fragment.glsl" />
+    <None Include="src\shaders\skybox_vertex.glsl" />
+    <None Include="gamedata\models\stone.mtl" />
+    <None Include="appdata\scene_state.json" />
+    <None Include="gamedata\models\stone2.mtl" />
+    <None Include="gamedata\models\sand2.mtl" />
+    <None Include="src\shaders\wireframe_fragment.glsl" />
+    <None Include="src\shaders\wireframe_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gamedata\models\floor.obj" />
     <CustomBuild Include="gamedata\models\sphere.obj" />
+    <CustomBuild Include="gamedata\models\canopy.obj" />
+    <CustomBuild Include="gamedata\models\house.obj" />
+    <CustomBuild Include="gamedata\models\sand.obj" />
+    <CustomBuild Include="gamedata\models\stick.obj" />
+    <CustomBuild Include="gamedata\models\stone.obj" />
+    <CustomBuild Include="gamedata\models\stone2.obj" />
+    <CustomBuild Include="gamedata\models\sand2.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="gamedata\textures\weathered_planks_diff_2k.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\blue_metal_plate_diff_2k.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\Bricks098_1K-JPG_Color.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\damaged-grunge-texture-background.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\ornamental-textile-floor.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\PaintedPlaster006_1K-JPG_Color.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\rock-texture-wallpaper.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\rough-concrete-wall-with-peeling.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\skybox_cubemap\pz.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\skybox_cubemap\py.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\skybox_cubemap\px.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\skybox_cubemap\nz.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\skybox_cubemap\ny.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\skybox_cubemap\nx.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gamedata\textures\stone2.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -8,11 +8,14 @@
 #include "model/model_manager.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "camera/camera.h"
+#include "camera.h"
+#include "skybox/skybox.h"
+#include "scene.h"
+#include "player_controller.h"
 
 int main() {
 
-    Window window(1200, 900, "Cell");
+    Window window(1920, 1080, "Cell");
 
     window.init();
        
@@ -28,6 +31,17 @@ int main() {
         return -1;
     }
 
+    Shader skyboxShader;
+    if (!skyboxShader.init("src/shaders/skybox_vertex.glsl", "src/shaders/skybox_fragment.glsl")) {
+        return -1;
+    }
+
+    Skybox skybox;
+    if (!skybox.init()) {  // Uses default texture directory
+        std::cerr << "Failed to initialize skybox" << std::endl;
+        return -1;
+    }
+
     UI ui(window.getHandle());
     if (!ui.init()) {
         return -1;
@@ -35,17 +49,27 @@ int main() {
 
     ModelManager modelManager;
 
+    Scene scene(&modelManager, &ui);
+    ui.setSaveSceneCallback([&scene]() {
+        scene.saveState();
+        });
+    scene.loadState();
+
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     // Create view and projection matrices
     glm::mat4 view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f),
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f),
         static_cast<float>(window.getWidth()) / window.getHeight(),
-        0.1f, 100.0f);
+        0.1f, 800.0f);
 
     Camera camera(window.getHandle());
+
+    Player player(window.getHandle());
+    PlayerController playerController(camera, player, ui);
+
     float lastFrame = 0.0f;
 
     while (!window.shouldClose()) {
@@ -55,7 +79,7 @@ int main() {
         lastFrame = currentFrame;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         camera.update(deltaTime);
 
@@ -67,6 +91,15 @@ int main() {
 
         modelManager.updateModelsFromSelection(ui.getSelectedModels());
         modelManager.renderAll(shader);
+
+        skyboxShader.use();
+        glm::mat4 skyboxView = glm::mat4(glm::mat3(camera.getViewMatrix()));
+        skyboxShader.setMat4("view", skyboxView);
+        skyboxShader.setMat4("projection", projection);
+        skyboxShader.setInt("skybox", 0); 
+        skybox.render(skyboxShader);
+
+        playerController.update(deltaTime);
 
         ui.render(camera);
 

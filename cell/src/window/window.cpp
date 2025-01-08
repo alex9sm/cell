@@ -51,6 +51,7 @@ bool Window::init() {
 
 void Window::update() {
     glfwSwapBuffers(m_Window);
+    glfwSwapInterval(0);
     glfwPollEvents();
 }
 

@@ -1,11 +1,5 @@
 #include "material.h"
 
-Material::Material(const std::string& name)
-    : m_Name(name)
-    , m_DiffuseTexture(nullptr)
-{
-}
-
 bool Material::loadDiffuseTexture(const std::string& path) {
     m_DiffuseTexture = std::make_shared<Texture>();
     return m_DiffuseTexture->loadTexture(path);
@@ -13,7 +7,7 @@ bool Material::loadDiffuseTexture(const std::string& path) {
 
 void Material::bind() const {
     if (m_DiffuseTexture) {
-        m_DiffuseTexture->bind(0); // Use texture unit 0 for diffuse
+        m_DiffuseTexture->bind(0); // unit 0 for diffuse
     }
 }
 

@@ -5,11 +5,14 @@
 #include <filesystem>
 #include <algorithm>
 #include "camera.h"
+#include "scene.h"
+#include "model_manager.h"
 
 UI::UI(GLFWwindow* window)
     : m_Window(window)
     , m_ShowDemoWindow(true)
     , m_CurrentItem(0)
+    , m_PlayerMode(false)
 {
     refreshModelList();
 }
@@ -69,7 +72,7 @@ void UI::render(Camera& camera) {
     {
         ImGui::Begin("Cell");
 
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+        ImGui::Text("%.3f ms/frame (%.1f FPS)",
             1000.0f / ImGui::GetIO().Framerate,
             ImGui::GetIO().Framerate);
 
@@ -80,6 +83,10 @@ void UI::render(Camera& camera) {
         static float speed = camera.m_MovementSpeed;
         if (ImGui::SliderFloat("Camera Speed", &speed, 1.0f, 50.0f, "%.1f deg")) {
             camera.m_MovementSpeed = speed;
+        }
+
+        if (ImGui::Checkbox("Player Mode", &m_PlayerMode)) {
+            // Toggle will be handled in main.cpp
         }
 
         ImGui::Separator();
@@ -139,6 +146,13 @@ void UI::render(Camera& camera) {
             ImGui::PopID();
         }
         ImGui::EndChild();
+
+        if (ImGui::Button("Save Scene")) {
+            if (m_SaveSceneCallback) {
+                m_SaveSceneCallback();
+                std::cout << "Scene state saved successfully" << std::endl;
+            }
+        }
 
         ImGui::End();
     }

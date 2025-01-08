@@ -1,6 +1,7 @@
 #include "model_manager.h"
 #include <algorithm>
 #include <iostream>
+#include <filesystem>
 
 void ModelManager::updateModelsFromSelection(const std::vector<std::string>& selectedModels) {
     // First, remove any models that are no longer selected
@@ -20,10 +21,7 @@ void ModelManager::updateModelsFromSelection(const std::vector<std::string>& sel
             if (newModel->loadModel(fullPath)) {
                 std::cout << "Successfully loaded model: " << modelPath << std::endl;
 
-                // Position the new model - we'll offset each model slightly
-                float xOffset = static_cast<float>(m_LoadedModels.size()) * 2.0f;
-                newModel->setPosition(glm::vec3(xOffset, 0.0f, 0.0f));
-
+            
                 // Store the model and its path
                 m_LoadedModels.push_back(std::move(newModel));
                 m_LoadedPaths.push_back(fullPath);
@@ -73,3 +71,4 @@ void ModelManager::removeUnselectedModels(const std::vector<std::string>& select
         }
     }
 }
+
