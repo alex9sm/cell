@@ -63,4 +63,8 @@ public:
     glm::vec3 getAABBMax() const { return m_Position + m_AABBHalfExtents; }
     glm::vec3 getAABBCenter() const { return m_Position; }
     glm::vec3 getAABBHalfExtents() const { return m_AABBHalfExtents; }
+
+    void adjustPosition(const glm::vec3& adjustment) {
+        m_Position += adjustment;
+    }
 };

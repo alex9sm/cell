@@ -31,4 +31,6 @@ public:
     void removeUnselectedModels(const std::vector<std::string>& selectedModels);
 
     const std::vector<std::string>& getLoadedPaths() const { return m_LoadedPaths; }
+    const std::vector<std::unique_ptr<Model>>& getLoadedModels() const { return m_LoadedModels; }
+
 };

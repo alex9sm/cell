@@ -54,4 +54,7 @@ public:
     glm::mat4 getModelMatrix() const;
 
     std::vector<int> m_MaterialIndices;
+
+    const std::vector<float>& getVertices() const { return m_Vertices; }
+    const std::vector<unsigned int>& getIndices() const { return m_Indices; }
 };

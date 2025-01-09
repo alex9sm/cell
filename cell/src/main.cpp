@@ -74,6 +74,7 @@ int main() {
     Camera camera(window.getHandle());
 
     Player player(window.getHandle());
+    PlayerCollision playerCollision(modelManager, player);
     PlayerController playerController(camera, player, ui);
 
     float lastFrame = 0.0f;
@@ -113,6 +114,7 @@ int main() {
         }
 
         playerController.update(deltaTime);
+        playerCollision.update();
 
         ui.render(camera);
 

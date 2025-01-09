@@ -148,6 +148,7 @@
     <ClCompile Include="src\model\model.cpp" />
     <ClCompile Include="src\model\model_manager.cpp" />
     <ClCompile Include="src\player\player.cpp" />
+    <ClCompile Include="src\player\player_collision.cpp" />
     <ClCompile Include="src\player\player_controller.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\shaderfv\shader.cpp" />
