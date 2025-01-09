@@ -11,11 +11,19 @@ Player::Player(GLFWwindow* window)
     , m_Pitch(0.0f)
     , m_MovementSpeed(2.5f)
     , m_MouseSensitivity(0.1f)
-    , m_EyeHeight(1.8f) 
-    , m_GravityAcceleration(9.81f)  // Standard gravity acceleration (m/s^2)
-    , m_TerminalVelocity(53.0f)     // Approximate terminal velocity for a human
+    , m_EyeHeight(1.8f)
+    , m_GravityAcceleration(9.81f)
+    , m_TerminalVelocity(53.0f)
+    , m_AABBHalfExtents(glm::vec3(0.4f, 0.4f, 0.4f)) // Slightly smaller than OBB for better fit
 {
     updateVectors();
+    setupAABBMesh();
+}
+
+Player::~Player() {
+    glDeleteBuffers(1, &m_AABBVertexBuffer);
+    glDeleteBuffers(1, &m_AABBIndexBuffer);
+    glDeleteVertexArrays(1, &m_AABBVertexArray);
 }
 
 void Player::update(float deltaTime) {
@@ -96,4 +104,60 @@ void Player::updateVectors() {
     // Re-calculate the Right and Up vectors
     m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));
     m_Up = glm::normalize(glm::cross(m_Right, m_Front));
+}
+
+void Player::setupAABBMesh() {
+    // AABB vertices
+    float vertices[] = {
+        // Front face
+        -0.5f, -1.0f, -0.5f,
+         0.5f, -1.0f, -0.5f,
+         0.5f,  1.0f, -0.5f,
+        -0.5f,  1.0f, -0.5f,
+        // Back face
+        -0.5f, -1.0f,  0.5f,
+         0.5f, -1.0f,  0.5f,
+         0.5f,  1.0f,  0.5f,
+        -0.5f,  1.0f,  0.5f,
+    };
+
+    // Indices for drawing the box as lines
+    unsigned int indices[] = {
+        // Front face
+        0, 1,    1, 2,    2, 3,    3, 0,
+        // Back face
+        4, 5,    5, 6,    6, 7,    7, 4,
+        // Connecting lines
+        0, 4,    1, 5,    2, 6,    3, 7
+    };
+
+    glGenVertexArrays(1, &m_AABBVertexArray);
+    glGenBuffers(1, &m_AABBVertexBuffer);
+    glGenBuffers(1, &m_AABBIndexBuffer);
+
+    glBindVertexArray(m_AABBVertexArray);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_AABBVertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_AABBIndexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+}
+
+void Player::renderAABB(const Shader& shader) const {
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, m_Position + glm::vec3(0.0f, m_AABBHalfExtents.y, 0.0f));
+    model = glm::scale(model, m_AABBHalfExtents * 2.0f); // Double half-extents to get full size
+
+    shader.setMat4("model", model);
+    shader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f)); // Green wireframe
+
+    glBindVertexArray(m_AABBVertexArray);
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }

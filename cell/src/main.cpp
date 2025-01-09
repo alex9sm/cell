@@ -12,6 +12,7 @@
 #include "skybox/skybox.h"
 #include "scene.h"
 #include "player_controller.h"
+#include "player_collision.h"
 
 int main() {
 
@@ -33,6 +34,11 @@ int main() {
 
     Shader skyboxShader;
     if (!skyboxShader.init("src/shaders/skybox_vertex.glsl", "src/shaders/skybox_fragment.glsl")) {
+        return -1;
+    }
+
+    Shader wireframeShader;
+    if (!wireframeShader.init("src/shaders/wireframe_vertex.glsl", "src/shaders/wireframe_fragment.glsl")) {
         return -1;
     }
 
@@ -98,6 +104,13 @@ int main() {
         skyboxShader.setMat4("projection", projection);
         skyboxShader.setInt("skybox", 0); 
         skybox.render(skyboxShader);
+
+        if (!ui.isPlayerMode()) {
+            wireframeShader.use();
+            wireframeShader.setMat4("view", camera.getViewMatrix());
+            wireframeShader.setMat4("projection", projection);
+            player.renderAABB(wireframeShader);
+        }
 
         playerController.update(deltaTime);
 

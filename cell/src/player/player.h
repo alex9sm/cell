@@ -26,25 +26,30 @@ private:
     // Player properties
     float m_MovementSpeed;
     float m_MouseSensitivity;
-    float m_EyeHeight;  // Offset for camera position
+    float m_EyeHeight;
 
-    float m_GravityAcceleration;  // Acceleration due to gravity (m/s^2)
-    float m_TerminalVelocity;     // Maximum falling speed (m/s)
+    float m_GravityAcceleration;
+    float m_TerminalVelocity;
+
+    // AABB properties
+    glm::vec3 m_AABBHalfExtents;  // Half-width, half-height, half-depth
+    GLuint m_AABBVertexBuffer;
+    GLuint m_AABBVertexArray;
+    GLuint m_AABBIndexBuffer;
 
     // Internal methods
     void updateVectors();
     void applyGravity(float deltaTime);
+    void setupAABBMesh();
 
 public:
     Player(GLFWwindow* window);
-    ~Player() = default;
+    ~Player();
 
-    // Main update function
     void update(float deltaTime);
-
-    // Input processing
     void processKeyboard(float deltaTime);
     void processMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
+    void renderAABB(const Shader& shader) const;
 
     // Getters for camera attachment
     glm::vec3 getPosition() const { return m_Position + glm::vec3(0.0f, m_EyeHeight, 0.0f); }
@@ -52,4 +57,10 @@ public:
     glm::vec3 getUp() const { return m_Up; }
     float getYaw() const { return m_Yaw; }
     float getPitch() const { return m_Pitch; }
+
+    // AABB collision methods
+    glm::vec3 getAABBMin() const { return m_Position - m_AABBHalfExtents; }
+    glm::vec3 getAABBMax() const { return m_Position + m_AABBHalfExtents; }
+    glm::vec3 getAABBCenter() const { return m_Position; }
+    glm::vec3 getAABBHalfExtents() const { return m_AABBHalfExtents; }
 };

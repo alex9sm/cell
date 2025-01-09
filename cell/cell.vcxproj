@@ -173,6 +173,7 @@
     <ClInclude Include="src\model\model.h" />
     <ClInclude Include="src\model\model_manager.h" />
     <ClInclude Include="src\player\player.h" />
+    <ClInclude Include="src\player\player_collision.h" />
     <ClInclude Include="src\player\player_controller.h" />
     <ClInclude Include="src\scene\scene.h" />
     <ClInclude Include="src\shaderfv\shader.h" />

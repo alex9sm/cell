@@ -146,6 +146,9 @@
     <ClInclude Include="src\player\player_controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\player\player_collision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\fragment.glsl" />
